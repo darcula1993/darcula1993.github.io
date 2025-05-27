@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }, 500);
                         }
                     }, 1000);
-                }, 800);
+                    }, 800);
             };
             
             img.onerror = function() {

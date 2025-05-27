@@ -8,7 +8,16 @@ const gameState = {
     currentLocation: null,
     inventory: [],
     visitedToday: false,
-    events: []
+    events: [],
+    // 游戏起始日期：绍兴十年十二月十八日（1140年12月18日）
+    // 距离岳飞被害（1142年1月27日）还有40天
+    startDate: {
+        year: 1140,
+        month: 12,
+        day: 18,
+        eraName: '绍兴',
+        eraYear: 10
+    }
 };
 
 // 音频管理器
@@ -531,6 +540,65 @@ const events = {
 // 市场价格
 let marketPrices = {};
 
+// 日期计算工具
+const dateUtils = {
+    // 中国古代月份名称
+    monthNames: [
+        '正月', '二月', '三月', '四月', '五月', '六月',
+        '七月', '八月', '九月', '十月', '十一月', '十二月'
+    ],
+    
+    // 计算当前游戏日期
+    getCurrentDate: function() {
+        const startDate = gameState.startDate;
+        const daysPassed = gameState.day - 1;
+        
+        // 从起始日期开始计算
+        let currentYear = startDate.year;
+        let currentMonth = startDate.month;
+        let currentDay = startDate.day + daysPassed;
+        let eraYear = startDate.eraYear;
+        
+        // 简化的月份天数（不考虑闰年）
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        // 处理日期溢出
+        while (currentDay > daysInMonth[currentMonth - 1]) {
+            currentDay -= daysInMonth[currentMonth - 1];
+            currentMonth++;
+            
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+                eraYear++;
+            }
+        }
+        
+        return {
+            year: currentYear,
+            month: currentMonth,
+            day: currentDay,
+            eraName: startDate.eraName,
+            eraYear: eraYear,
+            monthName: this.monthNames[currentMonth - 1]
+        };
+    },
+    
+    // 格式化日期显示
+    formatDate: function(dateObj) {
+        if (!dateObj) {
+            dateObj = this.getCurrentDate();
+        }
+        
+        return `${dateObj.eraName}${dateObj.eraYear}年${dateObj.monthName}${dateObj.day}日`;
+    },
+    
+    // 获取距离岳飞被害的剩余天数
+    getDaysUntilYueFeiDeath: function() {
+        return gameState.maxDays - gameState.day + 1;
+    }
+};
+
 // 初始化游戏
 function initGame() {
     console.log('=== 游戏初始化开始 ===');
@@ -703,6 +771,9 @@ function modifyPricesAll(multiplier) {
 
 // 更新统计数据
 function updateStats() {
+    // 更新日期显示
+    document.getElementById('current-date').textContent = dateUtils.formatDate();
+    
     document.getElementById('day').textContent = gameState.day;
     document.getElementById('money').textContent = gameState.money;
     document.getElementById('debt').textContent = Math.floor(gameState.debt);
@@ -730,8 +801,19 @@ function bindEvents() {
     
     // 下一天按钮
     document.getElementById('next-day-btn').addEventListener('click', function() {
+        showEndDayConfirmation();
+    });
+    
+    // 结束今天确认按钮
+    document.getElementById('confirm-end-day').addEventListener('click', function() {
+        document.getElementById('end-day-modal').classList.remove('active');
         nextDay();
         checkGameOver();
+    });
+    
+    // 取消结束今天按钮
+    document.getElementById('cancel-end-day').addEventListener('click', function() {
+        document.getElementById('end-day-modal').classList.remove('active');
     });
     
     // 事件确认按钮
@@ -1025,6 +1107,9 @@ function updateInventory() {
 
 // 下一天
 function nextDay() {
+    // 显示日期过渡效果
+    showDateTransition();
+    
     // 增加天数
     gameState.day += 1;
     
@@ -1036,6 +1121,16 @@ function nextDay() {
     
     // 重置访问状态
     gameState.visitedToday = false;
+    
+    // 清除当前地点选择
+    gameState.currentLocation = null;
+    document.getElementById('current-location').textContent = '请选择地点';
+    
+    // 清除地点按钮的选中状态
+    const locationButtons = document.querySelectorAll('.location-btn');
+    locationButtons.forEach(button => {
+        button.classList.remove('active');
+    });
     
     // 更新市场价格
     updateMarketPrices();
@@ -1050,6 +1145,22 @@ function nextDay() {
         const event = events[eventType][Math.floor(Math.random() * events[eventType].length)];
         event.effect();
     }
+}
+
+// 显示日期过渡效果
+function showDateTransition() {
+    const currentDate = dateUtils.formatDate();
+    const newDate = dateUtils.formatDate({
+        ...dateUtils.getCurrentDate(),
+        day: dateUtils.getCurrentDate().day + 1
+    });
+    
+    // 创建过渡提示
+    const transitionText = `${currentDate} → ${newDate}`;
+    const daysRemaining = dateUtils.getDaysUntilYueFeiDeath() - 1;
+    const description = `新的一天开始了！距离岳飞在风波亭遇害还有${daysRemaining}天。`;
+    
+    showEvent('时光流转', `${transitionText}\n\n${description}`);
 }
 
 // 显示事件
@@ -1150,3 +1261,83 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1500);
 });
+
+// 显示结束今天确认模态框
+function showEndDayConfirmation() {
+    // 计算今日总结数据
+    const currentDate = dateUtils.getCurrentDate();
+    const nextDate = dateUtils.formatDate({
+        ...currentDate,
+        day: currentDate.day + 1
+    });
+    
+    // 计算今日债务利息
+    const currentDebt = Math.floor(gameState.debt);
+    const interestAmount = Math.floor(gameState.debt * 0.1);
+    const newDebt = currentDebt + interestAmount;
+    
+    // 计算库存价值
+    const inventoryValue = calculateInventoryValue();
+    
+    // 生成总结内容
+    const summaryContent = document.getElementById('summary-content');
+    summaryContent.innerHTML = `
+        <div class="summary-item">
+            <span class="summary-label">当前日期：</span>
+            <span class="summary-value">${dateUtils.formatDate()}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">明日日期：</span>
+            <span class="summary-value">${nextDate}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">当前银两：</span>
+            <span class="summary-value">${gameState.money}文</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">当前债务：</span>
+            <span class="summary-value negative">${currentDebt}文</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">明日债务：</span>
+            <span class="summary-value negative">${newDebt}文 (+${interestAmount}文利息)</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">库存价值：</span>
+            <span class="summary-value">${inventoryValue}文</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">当前健康：</span>
+            <span class="summary-value">${gameState.health}/100</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">剩余天数：</span>
+            <span class="summary-value">${dateUtils.getDaysUntilYueFeiDeath()}天</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">今日访问：</span>
+            <span class="summary-value">${gameState.currentLocation || '未访问任何地点'}</span>
+        </div>
+    `;
+    
+    // 显示模态框
+    document.getElementById('end-day-modal').classList.add('active');
+}
+
+// 计算库存价值
+function calculateInventoryValue() {
+    let totalValue = 0;
+    
+    gameState.inventory.forEach(item => {
+        const productList = item.type === 'regular' ? products.regular : products.gray;
+        const product = productList.find(p => p.id === item.id);
+        
+        if (product) {
+            // 使用平均价格作为库存价值
+            const avgPrice = (product.minPrice + product.maxPrice) / 2;
+            totalValue += avgPrice * item.quantity;
+        }
+    });
+    
+    return Math.floor(totalValue);
+}

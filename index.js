@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.opacity = '0';
         
         setTimeout(() => {
-            window.location.href = 'intro.html';
+        window.location.href = 'intro.html';
         }, 500);
     });
     

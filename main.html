@@ -13,6 +13,10 @@
             <div id="game-title">临安浮生记</div>
             <div id="game-stats">
                 <div class="stat">
+                    <span class="stat-label">日期</span>
+                    <span class="stat-value" id="current-date">绍兴十年十二月十八日</span>
+                </div>
+                <div class="stat">
                     <span class="stat-label">天数</span>
                     <span class="stat-value"><span id="day">1</span>/40</span>
                 </div>
@@ -90,6 +94,24 @@
                 <h2 id="game-over-title"></h2>
                 <p id="game-over-description"></p>
                 <button id="restart-game">重新开始</button>
+            </div>
+        </div>
+
+        <!-- 结束今天确认模态框 -->
+        <div id="end-day-modal" class="modal">
+            <div class="modal-content">
+                <h2>结束今天</h2>
+                <div id="day-summary">
+                    <p>今日总结：</p>
+                    <div id="summary-content">
+                        <!-- 动态生成的总结内容 -->
+                    </div>
+                    <p class="warning-text">⚠️ 结束今天后将进入下一日，债务利息会增加10%，你确定要结束今天吗？</p>
+                </div>
+                <div class="modal-buttons">
+                    <button id="confirm-end-day" class="confirm-btn">确认结束</button>
+                    <button id="cancel-end-day" class="cancel-btn">继续今天</button>
+                </div>
             </div>
         </div>
 

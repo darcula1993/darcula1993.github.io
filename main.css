@@ -824,3 +824,130 @@ h2::after {
         padding: 12px 25px;
     }
 }
+
+/* 结束今天模态框样式 */
+#end-day-modal .modal-content {
+    max-width: 500px;
+    padding: 25px;
+}
+
+#day-summary {
+    margin: 20px 0;
+}
+
+#summary-content {
+    background: rgba(248, 240, 227, 0.8);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #d4af37;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+    font-size: 16px;
+    color: #5d4037;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    font-weight: bold;
+    color: #8b4513;
+}
+
+.summary-value {
+    color: #2e7d32;
+}
+
+.summary-value.negative {
+    color: #c62828;
+}
+
+.warning-text {
+    color: #d84315 !important;
+    font-weight: bold;
+    text-align: center;
+    background: rgba(255, 193, 7, 0.1);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ffc107;
+    margin: 15px 0 !important;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.confirm-btn, .cancel-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #8b4513, #a0522d);
+    color: #f8f0e3;
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
+}
+
+.confirm-btn:hover {
+    background: linear-gradient(135deg, #a0522d, #8b4513);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.4);
+}
+
+.cancel-btn {
+    background: rgba(141, 110, 99, 0.1);
+    color: #8d6e63;
+    border: 1px solid #d7b899;
+}
+
+.cancel-btn:hover {
+    background: rgba(141, 110, 99, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 日期显示样式优化 */
+#current-date {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 16px;
+    color: #8b4513;
+    font-weight: bold;
+}
+
+/* 响应式设计 - 结束今天模态框 */
+@media (max-width: 768px) {
+    #end-day-modal .modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .confirm-btn, .cancel-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .summary-item {
+        font-size: 14px;
+    }
+}
