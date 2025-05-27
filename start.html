@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>临安浮生记</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="start.css">
+</head>
+<body>
+    <!-- 预加载音频 -->
+    <audio id="bgm-preload" preload="auto" style="display:none;">
+        <source src="./assets/audios/标题界面bgm.ogg" type="audio/ogg">
+    </audio>
+    
+    <div class="particles-container">
+        <div id="particles"></div>
+    </div>
+    
+    <div class="scroll-container">
+        <div class="scroll-top"></div>
+        <div class="scroll-content">
+            <div class="title-container">
+                <h1 class="game-title">临安浮生记</h1>
+                <div class="subtitle">南宋商贾风云</div>
+                <div class="era">岳飞北伐 · 公元1140年</div>
+            </div>
+            
+            <div class="menu-container">
+                <button id="start-game" class="menu-btn">开始游戏</button>
+                <button id="game-intro" class="menu-btn">游戏介绍</button>
+                <button id="game-settings" class="menu-btn">游戏设置</button>
+            </div>
+            
+            <div class="footer">
+                <div class="quote">"商贾逐利如水走下，浮生若梦似云卷舒"</div>
+            </div>
+        </div>
+        <div class="scroll-bottom"></div>
+    </div>
+    
+    <div id="intro-modal" class="modal">
+        <div class="modal-content">
+            <h2>游戏介绍</h2>
+            <div class="intro-text">
+                <p>南宋1140年，岳飞北伐抗金之际，你作为一名初到临安（今杭州）的商人，需要在这座繁华的都城中打拼。</p>
+                <p>你背负着5500文的债务，每日利息高达10%。你必须在40天内还清债务，并通过倒买倒卖积累财富，成为临安城首富。</p>
+                <p>游戏中，你将在清河坊、凤凰山、艮山门等地区之间奔波，买卖丝绸、茶叶、瓷器等商品，同时应对各种随机事件的挑战。</p>
+                <p>战争、瘟疫、官府查税、劫匪......这一切都可能影响你的商业之路。你能在这乱世中脱颖而出吗？</p>
+            </div>
+            <button id="close-intro" class="modal-btn">了解了</button>
+        </div>
+    </div>
+    
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>游戏设置</h2>
+            <div class="settings-container">
+                <div class="setting-item">
+                    <label for="difficulty">难度选择：</label>
+                    <select id="difficulty">
+                        <option value="easy">简易（初始资金3000文）</option>
+                        <option value="normal" selected>普通（初始资金2000文）</option>
+                        <option value="hard">困难（初始资金1000文）</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="music-volume">音乐音量：</label>
+                    <input type="range" id="music-volume" min="0" max="100" value="50">
+                </div>
+                <div class="setting-item">
+                    <label for="sfx-volume">音效音量：</label>
+                    <input type="range" id="sfx-volume" min="0" max="100" value="50">
+                </div>
+            </div>
+            <button id="save-settings" class="modal-btn">保存设置</button>
+        </div>
+    </div>
+
+    <script src="start.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>临安浮生记 - 开场剧情</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="intro.css">
+    <style>
+        /* 确保背景元素可见 */
+        #background {
+            background-color: #333; /* 默认背景色 */
+        }
+        
+        /* 确保对话框可见 */
+        #dialogue-box {
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载剧情...</div>
+    </div>
+
+    <div id="story-container">
+        <div id="background"></div>
+        <div id="character-left" class="character"></div>
+        <div id="character-right" class="character"></div>
+        <div id="character-center" class="character"></div>
+        
+        <div id="dialogue-box">
+            <div id="speaker-name"></div>
+            <div id="dialogue-text"></div>
+            <div id="continue-hint">点击继续...</div>
+        </div>
+        
+        <div id="skip-button">跳过剧情</div>
+    </div>
+
+    <!-- 检查是否有音频在播放 -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // 检查localStorage中是否有标记表示音频已经开始播放
+            const audioStarted = localStorage.getItem('audioStarted');
+            
+            if (!audioStarted) {
+                // 如果没有音频在播放，则添加一个交互提示
+                const interactionPrompt = document.createElement('div');
+                interactionPrompt.style.position = 'fixed';
+                interactionPrompt.style.top = '50%';
+                interactionPrompt.style.left = '50%';
+                interactionPrompt.style.transform = 'translate(-50%, -50%)';
+                interactionPrompt.style.padding = '20px';
+                interactionPrompt.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                interactionPrompt.style.color = 'white';
+                interactionPrompt.style.borderRadius = '10px';
+                interactionPrompt.style.zIndex = '1000';
+                interactionPrompt.style.cursor = 'pointer';
+                interactionPrompt.textContent = '点击开始剧情音乐';
+                
+                interactionPrompt.addEventListener('click', function() {
+                    // 创建音频元素并播放
+                    const audio = new Audio('assets/audios/开场剧情bgm.ogg');
+                    audio.loop = true;
+                    audio.play().then(() => {
+                        // 标记音频已开始播放
+                        localStorage.setItem('audioStarted', 'true');
+                    }).catch(error => console.error('音频播放失败:', error));
+                    document.body.removeChild(interactionPrompt);
+                });
+                
+                document.body.appendChild(interactionPrompt);
+            }
+        });
+    </script>
+
+    <script src="intro.js"></script>
+</body>
+</html>

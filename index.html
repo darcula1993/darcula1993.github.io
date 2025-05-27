@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>临安浮生记</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-header">
+            <div id="game-title">临安浮生记</div>
+            <div id="game-stats">
+                <div class="stat">
+                    <span class="stat-label">天数</span>
+                    <span class="stat-value"><span id="day">1</span>/40</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">银两</span>
+                    <span class="stat-value"><span id="money">2000</span>文</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">债务</span>
+                    <span class="stat-value"><span id="debt">5500</span>文</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">健康</span>
+                    <span class="stat-value"><span id="health">100</span>/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-content">
+            <div id="location-panel">
+                <h2>地点选择</h2>
+                <div id="locations">
+                    <button class="location-btn" data-location="清河坊">清河坊</button>
+                    <button class="location-btn" data-location="凤凰山">凤凰山</button>
+                    <button class="location-btn" data-location="艮山门">艮山门</button>
+                    <button class="location-btn" data-location="大井巷">大井巷</button>
+                    <button class="location-btn" data-location="万松岭">万松岭</button>
+                    <button class="location-btn" data-location="湖墅">湖墅</button>
+                </div>
+            </div>
+
+            <div id="market-panel">
+                <h2>市场 - <span id="current-location">请选择地点</span></h2>
+                <div id="market-tabs">
+                    <button class="tab-btn active" data-tab="regular">正规商品</button>
+                    <button class="tab-btn" data-tab="gray">灰色商品</button>
+                </div>
+                <div id="market-content">
+                    <div id="regular-goods" class="goods-list active">
+                        <!-- 正规商品列表将通过JS动态生成 -->
+                    </div>
+                    <div id="gray-goods" class="goods-list">
+                        <!-- 灰色商品列表将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="inventory-panel">
+                <h2>背包</h2>
+                <div id="inventory-list">
+                    <!-- 背包内容将通过JS动态生成 -->
+                    <p id="empty-inventory">背包是空的</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-footer">
+            <button id="next-day-btn">结束今天</button>
+        </div>
+
+        <div id="event-modal" class="modal">
+            <div class="modal-content">
+                <h2>事件</h2>
+                <p id="event-description"></p>
+                <button id="event-confirm">确定</button>
+            </div>
+        </div>
+
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="game-over-title"></h2>
+                <p id="game-over-description"></p>
+                <button id="restart-game">重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
