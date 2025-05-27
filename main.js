@@ -594,7 +594,7 @@ const dateUtils = {
     },
     
     // 获取距离岳飞被害的剩余天数
-    getDaysUntilYueFeiDeath: function() {
+    getRemainingDays: function() {
         return gameState.maxDays - gameState.day + 1;
     }
 };
@@ -1157,8 +1157,8 @@ function showDateTransition() {
     
     // 创建过渡提示
     const transitionText = `${currentDate} → ${newDate}`;
-    const daysRemaining = dateUtils.getDaysUntilYueFeiDeath() - 1;
-    const description = `新的一天开始了！距离岳飞在风波亭遇害还有${daysRemaining}天。`;
+    const daysRemaining = dateUtils.getRemainingDays() - 1;
+    const description = `新的一天开始了！还有${daysRemaining}天时间完成你的目标。`;
     
     showEvent('时光流转', `${transitionText}\n\n${description}`);
 }
@@ -1312,7 +1312,7 @@ function showEndDayConfirmation() {
         </div>
         <div class="summary-item">
             <span class="summary-label">剩余天数：</span>
-            <span class="summary-value">${dateUtils.getDaysUntilYueFeiDeath()}天</span>
+            <span class="summary-value">${dateUtils.getRemainingDays()}天</span>
         </div>
         <div class="summary-item">
             <span class="summary-label">今日访问：</span>
