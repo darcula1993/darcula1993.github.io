@@ -464,11 +464,23 @@ h2::after {
     background-color: rgba(0, 0, 0, 0.7);
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .modal.active {
     display: flex;
+}
+
+/* 确保教程模态框有最高优先级 */
+#tutorial-modal {
+    z-index: 1001 !important;
+}
+
+/* 强制显示教程模态框的样式 */
+#tutorial-modal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .modal-content {
@@ -614,31 +626,28 @@ h2::after {
     bottom: 20px;
     left: 20px;
     z-index: 1000;
+    display: flex;
+    gap: 10px;
 }
 
 .audio-btn {
-    background: rgba(139, 69, 19, 0.9);
-    border: 2px solid #d7b899;
-    color: #f8f0e3;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
     width: 40px;
     height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    border: none;
+    border-radius: 50%;
+    background: rgba(139, 69, 19, 0.8);
+    color: #f8f0e3;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .audio-btn:hover {
     background: rgba(139, 69, 19, 1);
     transform: scale(1.1);
-    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .audio-btn:active {
@@ -667,4 +676,158 @@ h2::after {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* 教程模态框样式 */
+.tutorial-content {
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.tutorial-content h2 {
+    text-align: center;
+    color: #8b4513;
+    font-size: 32px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #d7b899;
+    padding-bottom: 10px;
+}
+
+.tutorial-sections {
+    margin-bottom: 30px;
+}
+
+.tutorial-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(248, 240, 227, 0.6);
+    border-radius: 8px;
+    border-left: 4px solid #d4af37;
+}
+
+.tutorial-section h3 {
+    color: #8b4513;
+    font-size: 24px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tutorial-section p {
+    color: #5d4037;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.tutorial-section p:last-child {
+    margin-bottom: 0;
+}
+
+.tutorial-section strong {
+    color: #8b4513;
+    font-weight: bold;
+}
+
+.tutorial-section em {
+    color: #b71c1c;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.tutorial-section ul {
+    margin-left: 20px;
+    color: #5d4037;
+    font-size: 18px;
+}
+
+.tutorial-section li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.tutorial-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #d7b899;
+}
+
+.tutorial-btn {
+    padding: 15px 35px;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    min-width: 140px;
+}
+
+.tutorial-btn:not(.secondary) {
+    background: linear-gradient(135deg, #8b4513, #a0522d);
+    color: #f8f0e3;
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.tutorial-btn:not(.secondary):hover {
+    background: linear-gradient(135deg, #a0522d, #8b4513);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 69, 19, 0.4);
+}
+
+.tutorial-btn.secondary {
+    background: rgba(141, 110, 99, 0.1);
+    color: #8d6e63;
+    border: 1px solid #d7b899;
+}
+
+.tutorial-btn.secondary:hover {
+    background: rgba(141, 110, 99, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 教程模态框响应式设计 */
+@media (max-width: 768px) {
+    .tutorial-content {
+        padding: 20px;
+        max-height: 90vh;
+    }
+    
+    .tutorial-content h2 {
+        font-size: 28px;
+    }
+    
+    .tutorial-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .tutorial-section h3 {
+        font-size: 22px;
+    }
+    
+    .tutorial-section p {
+        font-size: 16px;
+    }
+    
+    .tutorial-section ul {
+        font-size: 16px;
+    }
+    
+    .tutorial-footer {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tutorial-btn {
+        width: 100%;
+        max-width: 200px;
+        font-size: 18px;
+        padding: 12px 25px;
+    }
 }

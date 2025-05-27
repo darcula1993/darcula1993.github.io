@@ -677,8 +677,8 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('shouldPlayGameBGM', 'true');
         
         // 淡出当前BGM
-        if (currentBGM && !currentBGM.paused) {
-            fadeOutAudio(currentBGM, 1000);
+        if (audioManager.bgm && !audioManager.bgm.paused) {
+            audioManager.fadeOut(1000);
         }
         
         // 延迟跳转，等待音频淡出
@@ -690,6 +690,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function skipStory() {
         // 设置标记，表示应该播放游戏BGM
         localStorage.setItem('shouldPlayGameBGM', 'true');
+        
+        // 停止当前BGM
+        if (audioManager.bgm && !audioManager.bgm.paused) {
+            audioManager.stop();
+        }
+        
         window.location.href = 'main.html'; // 跳过剧情，直接进入游戏
     }
 });

@@ -31,6 +31,7 @@
             </div>
             <div id="audio-controls">
                 <button id="bgm-toggle" class="audio-btn" title="切换背景音乐">🎵</button>
+                <button id="help-btn" class="audio-btn" title="查看游戏帮助">❓</button>
             </div>
         </div>
 
@@ -89,6 +90,55 @@
                 <h2 id="game-over-title"></h2>
                 <p id="game-over-description"></p>
                 <button id="restart-game">重新开始</button>
+            </div>
+        </div>
+
+        <!-- 游戏玩法介绍模态框 -->
+        <div id="tutorial-modal" class="modal">
+            <div class="modal-content tutorial-content">
+                <h2>游戏玩法介绍</h2>
+                <div class="tutorial-sections">
+                    <div class="tutorial-section">
+                        <h3>📍 游戏目标</h3>
+                        <p>你需要在<strong>40天内</strong>还清<strong>5500文债务</strong>，并通过商业交易积累财富，成为临安城首富！</p>
+                    </div>
+                    
+                    <div class="tutorial-section">
+                        <h3>🏛️ 地点选择</h3>
+                        <p>临安城有6个不同的地区：<strong>清河坊、凤凰山、艮山门、大井巷、万松岭、湖墅</strong></p>
+                        <p>每个地区的商品价格都不同，你需要找到价格差异来获利。</p>
+                        <p><em>注意：每天只能访问一个地点！</em></p>
+                    </div>
+                    
+                    <div class="tutorial-section">
+                        <h3>💰 商品交易</h3>
+                        <p><strong>正规商品</strong>：丝绸、茶叶、瓷器、香料 - 安全但利润较低</p>
+                        <p><strong>灰色商品</strong>：私盐、兵器、禁书、赃物 - 利润高但有风险</p>
+                        <p>在价格低的地方买入，在价格高的地方卖出，赚取差价！</p>
+                    </div>
+                    
+                    <div class="tutorial-section">
+                        <h3>⚠️ 风险管理</h3>
+                        <p>灰色商品有被官府查获的风险，一旦被抓会损失商品和金钱。</p>
+                        <p>每日债务利息为<strong>10%</strong>，要及时还债避免利息累积。</p>
+                        <p>注意管理健康值，健康值过低会影响交易能力。</p>
+                    </div>
+                    
+                    <div class="tutorial-section">
+                        <h3>🎯 游戏技巧</h3>
+                        <ul>
+                            <li>观察各地价格差异，寻找最佳交易路线</li>
+                            <li>合理分配正规商品和灰色商品的比例</li>
+                            <li>留意随机事件，有些能带来意外收益</li>
+                            <li>时间宝贵，制定好每日的行动计划</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="tutorial-footer">
+                    <button id="start-tutorial" class="tutorial-btn">开始游戏</button>
+                    <button id="skip-tutorial" class="tutorial-btn secondary">跳过教程</button>
+                </div>
             </div>
         </div>
     </div>
