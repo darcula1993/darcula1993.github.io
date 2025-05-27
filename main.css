@@ -473,14 +473,7 @@ h2::after {
 
 /* 确保教程模态框有最高优先级 */
 #tutorial-modal {
-    z-index: 1001 !important;
-}
-
-/* 强制显示教程模态框的样式 */
-#tutorial-modal.active {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    z-index: 1001;
 }
 
 .modal-content {
