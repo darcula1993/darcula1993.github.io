@@ -574,52 +574,38 @@ function initGame() {
 function checkAndShowTutorial() {
     console.log('=== 教程检查开始 ===');
     
-    // 检查是否是第一次进入游戏
-    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    // 修改：每次进入游戏都显示教程
+    console.log('每次进入游戏都显示教程');
     
-    console.log('检查教程状态:', hasSeenTutorial);
-    console.log('localStorage内容:', localStorage);
+    // 立即尝试显示教程
+    const tutorialModal = document.getElementById('tutorial-modal');
+    console.log('找到教程模态框元素:', tutorialModal);
     
-    // 强制显示教程的条件：没有设置或者设置为false
-    const shouldShowTutorial = !hasSeenTutorial || hasSeenTutorial === 'false' || hasSeenTutorial === null;
-    
-    console.log('是否应该显示教程:', shouldShowTutorial);
-    
-    if (shouldShowTutorial) {
-        console.log('第一次进入游戏，准备显示教程');
+    if (tutorialModal) {
+        // 立即显示
+        tutorialModal.classList.add('active');
+        console.log('教程模态框已立即显示');
         
-        // 立即尝试显示教程
-        const tutorialModal = document.getElementById('tutorial-modal');
-        console.log('找到教程模态框元素:', tutorialModal);
-        
-        if (tutorialModal) {
-            // 立即显示
-            tutorialModal.classList.add('active');
-            console.log('教程模态框已立即显示');
-            
-            // 也设置延迟显示作为备用
-            setTimeout(() => {
-                if (!tutorialModal.classList.contains('active')) {
-                    tutorialModal.classList.add('active');
-                    console.log('延迟显示教程模态框');
-                }
-            }, 1000);
-        } else {
-            console.error('找不到教程模态框元素');
-            
-            // 延迟重试
-            setTimeout(() => {
-                const retryModal = document.getElementById('tutorial-modal');
-                if (retryModal) {
-                    retryModal.classList.add('active');
-                    console.log('重试显示教程模态框成功');
-                } else {
-                    console.error('重试后仍然找不到教程模态框元素');
-                }
-            }, 2000);
-        }
+        // 也设置延迟显示作为备用
+        setTimeout(() => {
+            if (!tutorialModal.classList.contains('active')) {
+                tutorialModal.classList.add('active');
+                console.log('延迟显示教程模态框');
+            }
+        }, 1000);
     } else {
-        console.log('已经看过教程，跳过显示');
+        console.error('找不到教程模态框元素');
+        
+        // 延迟重试
+        setTimeout(() => {
+            const retryModal = document.getElementById('tutorial-modal');
+            if (retryModal) {
+                retryModal.classList.add('active');
+                console.log('重试显示教程模态框成功');
+            } else {
+                console.error('重试后仍然找不到教程模态框元素');
+            }
+        }, 2000);
     }
     
     console.log('=== 教程检查结束 ===');
@@ -628,7 +614,6 @@ function checkAndShowTutorial() {
 // 关闭教程并开始游戏
 function closeTutorial() {
     document.getElementById('tutorial-modal').classList.remove('active');
-    localStorage.setItem('hasSeenTutorial', 'true');
 }
 
 // 初始化市场价格
