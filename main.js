@@ -11,6 +11,213 @@ const gameState = {
     events: []
 };
 
+// 音频管理器
+const gameAudioManager = {
+    bgm: null,
+    currentTrack: '',
+    volume: 0.4,
+    isInitialized: false,
+    
+    // 初始化音频
+    init: function() {
+        this.bgm = new Audio();
+        this.bgm.loop = true;
+        this.bgm.volume = this.volume;
+        this.isInitialized = true;
+        
+        // 检查是否需要播放游戏BGM
+        const shouldPlayBGM = localStorage.getItem('shouldPlayGameBGM');
+        const introBGMEnded = localStorage.getItem('introBGMEnded');
+        
+        console.log('音频管理器初始化:', { shouldPlayBGM, introBGMEnded });
+        
+        if (shouldPlayBGM === 'true' || introBGMEnded === 'true') {
+            // 延迟一点时间再播放，确保页面完全加载
+            setTimeout(() => {
+                this.playGameplayBGM();
+                localStorage.removeItem('shouldPlayGameBGM');
+                localStorage.removeItem('introBGMEnded');
+            }, 500);
+        } else {
+            // 如果不是从剧情进入，添加用户交互监听器
+            this.addUserInteractionListener();
+        }
+    },
+    
+    // 播放游戏BGM
+    playGameplayBGM: function() {
+        const gameplayBGM = 'assets/audios/游戏进行中的bgm.ogg';
+        this.play(gameplayBGM);
+        console.log('尝试播放游戏BGM');
+    },
+    
+    // 播放指定音频
+    play: function(trackPath) {
+        if (!this.isInitialized) {
+            console.warn('音频管理器未初始化');
+            return;
+        }
+        
+        if (this.currentTrack === trackPath && !this.bgm.paused) {
+            console.log('BGM已在播放:', trackPath);
+            return;
+        }
+        
+        // 显示加载状态
+        this.setLoadingState();
+        
+        this.stop();
+        this.currentTrack = trackPath;
+        this.bgm.src = trackPath;
+        
+        // 尝试播放音频
+        const playPromise = this.bgm.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('BGM播放成功:', trackPath);
+                this.updateButtonState(false); // 更新按钮状态为播放中
+            }).catch(error => {
+                console.error('BGM播放失败:', error);
+                console.log('由于浏览器限制，需要用户交互才能播放音频');
+                // 如果自动播放失败，添加用户交互监听器
+                this.addUserInteractionListener();
+                this.updateButtonState(true); // 更新按钮状态为静音
+            });
+        } else {
+            // 对于不支持Promise的旧浏览器
+            setTimeout(() => {
+                if (this.bgm.paused) {
+                    this.addUserInteractionListener();
+                    this.updateButtonState(true);
+                } else {
+                    this.updateButtonState(false);
+                }
+            }, 100);
+        }
+    },
+    
+    // 添加用户交互监听器（用于处理自动播放限制）
+    addUserInteractionListener: function() {
+        const playOnInteraction = () => {
+            if (this.currentTrack && this.bgm.paused) {
+                this.bgm.play().then(() => {
+                    console.log('用户交互后BGM播放成功');
+                    this.updateButtonState(false);
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('keydown', playOnInteraction);
+                    document.removeEventListener('touchstart', playOnInteraction);
+                }).catch(error => {
+                    console.error('用户交互后BGM播放仍然失败:', error);
+                });
+            } else if (!this.currentTrack) {
+                // 如果没有当前音轨，播放游戏BGM
+                this.playGameplayBGM();
+                document.removeEventListener('click', playOnInteraction);
+                document.removeEventListener('keydown', playOnInteraction);
+                document.removeEventListener('touchstart', playOnInteraction);
+            }
+        };
+        
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+        document.addEventListener('touchstart', playOnInteraction);
+        
+        console.log('已添加用户交互监听器，等待用户操作以播放BGM');
+    },
+    
+    // 更新按钮状态
+    updateButtonState: function(isMuted) {
+        const bgmToggle = document.getElementById('bgm-toggle');
+        if (bgmToggle) {
+            if (isMuted) {
+                bgmToggle.classList.add('muted');
+                bgmToggle.classList.remove('loading');
+                bgmToggle.title = '播放背景音乐';
+                bgmToggle.innerHTML = '🎵';
+            } else {
+                bgmToggle.classList.remove('muted');
+                bgmToggle.classList.remove('loading');
+                bgmToggle.title = '暂停背景音乐';
+                bgmToggle.innerHTML = '🎵';
+            }
+        }
+    },
+    
+    // 设置加载状态
+    setLoadingState: function() {
+        const bgmToggle = document.getElementById('bgm-toggle');
+        if (bgmToggle) {
+            bgmToggle.classList.add('loading');
+            bgmToggle.classList.remove('muted');
+            bgmToggle.title = '正在加载音乐...';
+            bgmToggle.innerHTML = '⏳';
+        }
+    },
+    
+    // 停止音频
+    stop: function() {
+        if (this.bgm && !this.bgm.paused) {
+            this.bgm.pause();
+            this.bgm.currentTime = 0;
+        }
+        this.currentTrack = '';
+        this.updateButtonState(true);
+    },
+    
+    // 暂停音频
+    pause: function() {
+        if (this.bgm && !this.bgm.paused) {
+            this.bgm.pause();
+            this.updateButtonState(true);
+        }
+    },
+    
+    // 恢复播放
+    resume: function() {
+        if (this.bgm && this.bgm.paused && this.currentTrack) {
+            this.bgm.play().then(() => {
+                console.log('BGM恢复播放成功');
+                this.updateButtonState(false);
+            }).catch(error => {
+                console.error('BGM恢复播放失败:', error);
+                this.updateButtonState(true);
+            });
+        }
+    },
+    
+    // 淡出音频
+    fadeOut: function(duration = 2000) {
+        if (!this.bgm || this.bgm.paused) return;
+        
+        const originalVolume = this.bgm.volume;
+        const fadeSteps = 20;
+        const volumeStep = originalVolume / fadeSteps;
+        const stepDuration = duration / fadeSteps;
+        
+        let currentStep = 0;
+        
+        const fadeInterval = setInterval(() => {
+            currentStep++;
+            this.bgm.volume = Math.max(0, originalVolume - (volumeStep * currentStep));
+            
+            if (currentStep >= fadeSteps) {
+                clearInterval(fadeInterval);
+                this.stop();
+                this.bgm.volume = originalVolume;
+            }
+        }, stepDuration);
+    },
+    
+    // 设置音量
+    setVolume: function(volume) {
+        this.volume = Math.max(0, Math.min(1, volume));
+        if (this.bgm) {
+            this.bgm.volume = this.volume;
+        }
+    }
+};
+
 // 商品定义
 const products = {
     regular: [
@@ -326,6 +533,25 @@ let marketPrices = {};
 
 // 初始化游戏
 function initGame() {
+    // 初始化音频管理器
+    gameAudioManager.init();
+    
+    // 检查是否有难度设置
+    const difficulty = localStorage.getItem('gameDifficulty');
+    if (difficulty) {
+        switch(difficulty) {
+            case 'easy':
+                gameState.money = 3000;
+                break;
+            case 'normal':
+                gameState.money = 2000;
+                break;
+            case 'hard':
+                gameState.money = 1000;
+                break;
+        }
+    }
+    
     // 初始化市场价格
     initMarketPrices();
     
@@ -334,6 +560,8 @@ function initGame() {
     
     // 绑定事件
     bindEvents();
+    
+    console.log('游戏初始化完成');
 }
 
 // 初始化市场价格
@@ -434,36 +662,64 @@ function updateStats() {
 
 // 绑定事件
 function bindEvents() {
-    // 地点按钮点击事件
-    const locationButtons = document.querySelectorAll('.location-btn');
-    locationButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const location = button.dataset.location;
-            selectLocation(location);
+    // 地点选择按钮
+    document.querySelectorAll('.location-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectLocation(this.dataset.location);
         });
     });
     
-    // 标签切换事件
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const tab = button.dataset.tab;
-            selectTab(tab);
+    // 标签页切换
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectTab(this.dataset.tab);
         });
     });
     
-    // 下一天按钮点击事件
-    document.getElementById('next-day-btn').addEventListener('click', nextDay);
+    // 下一天按钮
+    document.getElementById('next-day-btn').addEventListener('click', function() {
+        nextDay();
+        checkGameOver();
+    });
     
-    // 事件确认按钮点击事件
-    document.getElementById('event-confirm').addEventListener('click', () => {
+    // 事件确认按钮
+    document.getElementById('event-confirm').addEventListener('click', function() {
         document.getElementById('event-modal').classList.remove('active');
     });
     
-    // 重新开始游戏按钮点击事件
-    document.getElementById('restart-game').addEventListener('click', () => {
+    // 重新开始按钮
+    document.getElementById('restart-game').addEventListener('click', function() {
         location.reload();
     });
+    
+    // BGM控制按钮
+    const bgmToggle = document.getElementById('bgm-toggle');
+    if (bgmToggle) {
+        bgmToggle.addEventListener('click', function() {
+            if (gameAudioManager.bgm && !gameAudioManager.bgm.paused) {
+                // 当前在播放，暂停BGM
+                gameAudioManager.pause();
+                console.log('BGM已暂停');
+            } else {
+                // 当前暂停或未播放，播放BGM
+                if (gameAudioManager.currentTrack) {
+                    gameAudioManager.resume();
+                } else {
+                    gameAudioManager.playGameplayBGM();
+                }
+                console.log('BGM已播放');
+            }
+        });
+        
+        // 初始化按钮状态
+        setTimeout(() => {
+            if (gameAudioManager.bgm && !gameAudioManager.bgm.paused) {
+                gameAudioManager.updateButtonState(false);
+            } else {
+                gameAudioManager.updateButtonState(true);
+            }
+        }, 1000);
+    }
 }
 
 // 选择地点
@@ -774,38 +1030,23 @@ function calculateTotalAssets() {
 
 // 结束游戏
 function endGame(title, description) {
+    // 淡出游戏BGM
+    gameAudioManager.fadeOut(1500);
+    
+    // 延迟播放游戏结束音效
+    setTimeout(() => {
+        const gameOverAudio = new Audio('assets/audios/gameover.ogg');
+        gameOverAudio.volume = 0.6;
+        gameOverAudio.play().catch(error => {
+            console.error('游戏结束音效播放失败:', error);
+        });
+    }, 1000);
+    
     const gameOverModal = document.getElementById('game-over-modal');
     document.getElementById('game-over-title').textContent = title;
     document.getElementById('game-over-description').textContent = description;
     gameOverModal.classList.add('active');
 }
 
-// 初始化游戏
-function initGame() {
-    // 检查是否有难度设置
-    const difficulty = localStorage.getItem('gameDifficulty');
-    if (difficulty) {
-        switch(difficulty) {
-            case 'easy':
-                gameState.money = 3000;
-                break;
-            case 'normal':
-                gameState.money = 2000;
-                break;
-            case 'hard':
-                gameState.money = 1000;
-                break;
-        }
-    }
-    
-    // 初始化市场价格
-    initMarketPrices();
-    
-    // 更新统计数据
-    updateStats();
-    
-    // 绑定事件
-    bindEvents();
-}
 // 初始化游戏
 document.addEventListener('DOMContentLoaded', initGame);

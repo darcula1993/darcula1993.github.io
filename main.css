@@ -12,9 +12,11 @@
 
 body {
     background-color: #f8f0e3;
-    background-image: url('https://img.freepik.com/free-photo/brown-concrete-wall-with-scratches_53876-94280.jpg');
+    background-image: url('assets/images/backgrounds/map.jpg');
     background-size: cover;
     background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -559,14 +561,32 @@ h2::after {
     #game-header {
         flex-direction: column;
         align-items: flex-start;
+        padding: 15px;
     }
     
     #game-title {
         margin-bottom: 15px;
+        font-size: 28px;
+    }
+    
+    /* 移动端音频控制按钮调整 */
+    #audio-controls {
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        z-index: 1000;
+    }
+    
+    .audio-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+        padding: 8px;
     }
     
     .modal-content {
         padding: 20px;
+        margin: 10px;
     }
     
     .modal h2 {
@@ -576,4 +596,75 @@ h2::after {
     .modal p {
         font-size: 16px;
     }
+    
+    #locations {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .location-btn {
+        padding: 12px 8px;
+        font-size: 14px;
+    }
+}
+
+/* 音频控制样式 */
+#audio-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.audio-btn {
+    background: rgba(139, 69, 19, 0.9);
+    border: 2px solid #d7b899;
+    color: #f8f0e3;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.audio-btn:hover {
+    background: rgba(139, 69, 19, 1);
+    transform: scale(1.1);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.5);
+}
+
+.audio-btn:active {
+    transform: scale(0.95);
+}
+
+.audio-btn.muted {
+    opacity: 0.6;
+    background: rgba(100, 100, 100, 0.9);
+}
+
+.audio-btn.muted::before {
+    content: '🔇';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+}
+
+.audio-btn.loading {
+    animation: spin 1s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

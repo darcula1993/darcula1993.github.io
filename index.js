@@ -152,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 按钮事件绑定
     document.getElementById('start-game').addEventListener('click', function() {
+        console.log('开始游戏按钮被点击');
+        
         // 停止当前BGM
         const titleBgm = document.getElementById('bgm-preload');
         if (titleBgm && !titleBgm.paused) {
@@ -159,8 +161,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         audioManager.stop();
         
-        // 跳转到剧情页面
-        window.location.href = 'intro.html';
+        // 淡出效果
+        document.body.style.transition = 'opacity 0.5s ease-out';
+        document.body.style.opacity = '0';
+        
+        setTimeout(() => {
+            window.location.href = 'intro.html';
+        }, 500);
     });
     
     document.getElementById('game-intro').addEventListener('click', function() {

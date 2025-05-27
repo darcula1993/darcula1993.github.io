@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
     narrationElement.classList.add('narration');
     document.getElementById('story-container').appendChild(narrationElement);
     
+    // 创建粒子效果容器
+    const particlesContainer = document.createElement('div');
+    particlesContainer.classList.add('particles');
+    document.getElementById('story-container').appendChild(particlesContainer);
+    
     // 获取DOM元素
     const dialogueBox = document.getElementById('dialogue-box');
     const speakerName = document.getElementById('speaker-name');
@@ -28,11 +33,40 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('story-container').appendChild(characterCenter); // 添加到DOM
     const skipButton = document.getElementById('skip-button');
     
+    // 确保跳过按钮始终可见
+    skipButton.style.display = 'block';
+    skipButton.style.zIndex = '9999';
+    
     console.log('DOM元素已获取:', 
         dialogueBox ? '对话框-OK' : '对话框-缺失',
         background ? '背景-OK' : '背景-缺失',
         narrationElement ? '旁白-OK' : '旁白-缺失'
     );
+    
+    // 创建粒子效果
+    function createParticles() {
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+                particlesContainer.appendChild(particle);
+                
+                // 粒子动画结束后移除
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 8000);
+            }, i * 300);
+        }
+    }
+    
+    // 启动粒子效果
+    createParticles();
+    setInterval(createParticles, 10000); // 每10秒创建新的粒子
     
     // 音频管理
     const audioManager = {
@@ -360,14 +394,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentStoryIndex < story.length) {
             showStory(currentStoryIndex);
         } else {
-            window.location.href = 'index.html'; // 剧情结束，进入游戏
+            endStory();
         }
     });
     
     // 点击跳过按钮
     skipButton.addEventListener('click', function() {
         console.log('跳过按钮被点击');
-        window.location.href = 'index.html'; // 跳过剧情，直接进入游戏
+        skipStory();
     });
     
     // 显示剧情
@@ -414,8 +448,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 淡出对话框和角色
         dialogueBox.style.opacity = '0';
+        dialogueBox.classList.remove('show');
         if (characterLeft) characterLeft.style.opacity = '0';
         if (characterRight) characterRight.style.opacity = '0';
+        if (characterCenter) characterCenter.style.opacity = '0';
         
         // 显示过渡黑屏
         transitionElement.classList.add('active');
@@ -425,10 +461,15 @@ document.addEventListener('DOMContentLoaded', function() {
             narrationElement.textContent = text;
             narrationElement.classList.add('active');
             console.log('旁白元素已激活');
-        }, 800);
+        }, 1000);
         
         // 等待点击继续
-        const clickHandler = function() {
+        const clickHandler = function(event) {
+            // 防止跳过按钮的点击事件触发剧情继续
+            if (event.target === skipButton) {
+                return;
+            }
+            
             // 淡出旁白
             narrationElement.classList.remove('active');
             
@@ -444,15 +485,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentStoryIndex < story.length) {
                     setTimeout(() => {
                         showStory(currentStoryIndex);
-                    }, 500);
+                    }, 800);
                 }
-            }, 500);
+            }, 800);
         };
         
         // 添加延迟，防止用户立即点击跳过
         setTimeout(() => {
             document.body.addEventListener('click', clickHandler);
-        }, 1000);
+        }, 1500);
     }
     
     // 更换背景
@@ -492,10 +533,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (currentStoryIndex < story.length) {
                             setTimeout(() => {
                                 showStory(currentStoryIndex);
-                            }, 300);
+                            }, 500);
                         }
-                    }, 800);
-                }, 500);
+                    }, 1000);
+                }, 800);
             };
             
             img.onerror = function() {
@@ -509,12 +550,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentStoryIndex < story.length) {
                     setTimeout(() => {
                         showStory(currentStoryIndex);
-                    }, 300);
+                    }, 500);
                 }
             };
             
             img.src = src;
-        }, 1000); // 等待背景完全淡出
+        }, 1200); // 等待背景完全淡出
     }
     
     // 显示角色
@@ -535,11 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 淡出当前角色
         character.style.opacity = '0';
+        character.classList.remove('active');
         
         setTimeout(() => {
             // 如果src为null，则隐藏角色
             if (src === null) {
-                character.classList.remove('active');
                 character.style.backgroundImage = 'none';
                 
                 // 继续下一段剧情
@@ -547,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentStoryIndex < story.length) {
                     setTimeout(() => {
                         showStory(currentStoryIndex);
-                    }, 300);
+                    }, 500);
                 }
             } else {
                 // 预加载角色图片
@@ -568,9 +609,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (currentStoryIndex < story.length) {
                             setTimeout(() => {
                                 showStory(currentStoryIndex);
-                            }, 300);
+                            }, 500);
                         }
-                    }, 100);
+                    }, 200);
                 };
                 
                 img.onerror = function() {
@@ -583,13 +624,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (currentStoryIndex < story.length) {
                         setTimeout(() => {
                             showStory(currentStoryIndex);
-                        }, 300);
+                        }, 500);
                     }
                 };
                 
                 img.src = src;
             }
-        }, 500); // 给角色足够的淡出时间
+        }, 600); // 给角色足够的淡出时间
     }
     
     // 显示对话
@@ -598,49 +639,57 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 先淡出对话框
         dialogueBox.style.opacity = '0';
+        dialogueBox.classList.remove('show');
         
         setTimeout(() => {
             // 更新对话内容
             speakerName.textContent = speaker;
             dialogueText.textContent = '';
+            dialogueText.classList.add('typing-cursor');
             
             // 淡入对话框
             dialogueBox.style.opacity = '1';
+            dialogueBox.classList.add('show');
             
             // 逐字显示文本
             let i = 0;
-            const typingSpeed = 30; // 打字速度（毫秒/字）
+            const typingSpeed = 50; // 打字速度（毫秒/字）
             
             function typeWriter() {
                 if (i < text.length) {
                     dialogueText.textContent += text.charAt(i);
                     i++;
                     setTimeout(typeWriter, typingSpeed);
+                } else {
+                    // 打字完成，移除光标效果
+                    dialogueText.classList.remove('typing-cursor');
                 }
             }
             
             // 开始打字效果
-            setTimeout(typeWriter, 200);
-        }, 300);
+            setTimeout(typeWriter, 300);
+        }, 400);
     }
     
     // 结束剧情
     function endStory() {
-        // 淡出所有元素
-        dialogueBox.style.opacity = '0';
-        characterLeft.style.opacity = '0';
-        characterRight.style.opacity = '0';
-        background.style.opacity = '0';
+        // 设置标记，表示应该播放游戏BGM
+        localStorage.setItem('shouldPlayGameBGM', 'true');
         
-        // 淡出BGM
-        audioManager.fadeOut(2000);
+        // 淡出当前BGM
+        if (currentBGM && !currentBGM.paused) {
+            fadeOutAudio(currentBGM, 1000);
+        }
         
-        // 显示过渡黑屏
-        transitionElement.classList.add('active');
-        
-        // 延迟后跳转到游戏页面
+        // 延迟跳转，等待音频淡出
         setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
+            window.location.href = 'main.html'; // 剧情结束，进入游戏
+        }, 1000);
+    }
+
+    function skipStory() {
+        // 设置标记，表示应该播放游戏BGM
+        localStorage.setItem('shouldPlayGameBGM', 'true');
+        window.location.href = 'main.html'; // 跳过剧情，直接进入游戏
     }
 });

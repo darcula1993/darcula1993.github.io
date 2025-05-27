@@ -14,21 +14,59 @@
         
         /* 确保对话框可见 */
         #dialogue-box {
-            z-index: 5;
+            z-index: 50;
+        }
+        
+        /* 优化用户交互提示 */
+        .interaction-prompt {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px 40px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(20,20,20,0.9));
+            color: #f8f0e3;
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            z-index: 10001;
+            cursor: pointer;
+            font-size: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .interaction-prompt:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+        
+        .interaction-prompt .prompt-title {
+            font-size: 24px;
+            color: #d7b899;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .interaction-prompt .prompt-subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div id="loading-screen">
         <div class="loading-spinner"></div>
-        <div class="loading-text">正在加载剧情...</div>
+        <div class="loading-text">正在加载剧情资源...</div>
     </div>
 
     <div id="story-container">
         <div id="background"></div>
         <div id="character-left" class="character"></div>
         <div id="character-right" class="character"></div>
-        <div id="character-center" class="character"></div>
+        <!-- character-center 将通过JavaScript动态创建 -->
         
         <div id="dialogue-box">
             <div id="speaker-name"></div>
@@ -39,7 +77,7 @@
         <div id="skip-button">跳过剧情</div>
     </div>
 
-    <!-- 检查是否有音频在播放 -->
+    <!-- 音频交互提示脚本 -->
     <script>
         window.addEventListener('DOMContentLoaded', function() {
             // 检查localStorage中是否有标记表示音频已经开始播放
@@ -48,27 +86,36 @@
             if (!audioStarted) {
                 // 如果没有音频在播放，则添加一个交互提示
                 const interactionPrompt = document.createElement('div');
-                interactionPrompt.style.position = 'fixed';
-                interactionPrompt.style.top = '50%';
-                interactionPrompt.style.left = '50%';
-                interactionPrompt.style.transform = 'translate(-50%, -50%)';
-                interactionPrompt.style.padding = '20px';
-                interactionPrompt.style.backgroundColor = 'rgba(0,0,0,0.7)';
-                interactionPrompt.style.color = 'white';
-                interactionPrompt.style.borderRadius = '10px';
-                interactionPrompt.style.zIndex = '1000';
-                interactionPrompt.style.cursor = 'pointer';
-                interactionPrompt.textContent = '点击开始剧情音乐';
+                interactionPrompt.className = 'interaction-prompt';
+                interactionPrompt.innerHTML = `
+                    <div class="prompt-title">🎵 开启音乐体验</div>
+                    <div>点击开始沉浸式剧情音乐</div>
+                    <div class="prompt-subtitle">建议佩戴耳机以获得最佳体验</div>
+                `;
                 
                 interactionPrompt.addEventListener('click', function() {
                     // 创建音频元素并播放
                     const audio = new Audio('assets/audios/开场剧情bgm.ogg');
                     audio.loop = true;
+                    audio.volume = 0.6;
                     audio.play().then(() => {
                         // 标记音频已开始播放
                         localStorage.setItem('audioStarted', 'true');
-                    }).catch(error => console.error('音频播放失败:', error));
-                    document.body.removeChild(interactionPrompt);
+                        console.log('背景音乐开始播放');
+                    }).catch(error => {
+                        console.error('音频播放失败:', error);
+                        // 即使音频播放失败也移除提示
+                        localStorage.setItem('audioStarted', 'true');
+                    });
+                    
+                    // 添加淡出效果
+                    interactionPrompt.style.opacity = '0';
+                    interactionPrompt.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                    setTimeout(() => {
+                        if (document.body.contains(interactionPrompt)) {
+                            document.body.removeChild(interactionPrompt);
+                        }
+                    }, 300);
                 });
                 
                 document.body.appendChild(interactionPrompt);
