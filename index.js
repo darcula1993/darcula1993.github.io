@@ -5,12 +5,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const audioManager = {
         bgm: null,
         currentTrack: '',
+        clickSound: null,
         
         // 初始化音频
         init: function() {
             this.bgm = new Audio();
             this.bgm.loop = true;
             this.bgm.volume = 0.5;
+            
+            // 初始化点击音效
+            this.clickSound = new Audio('assets/audios/click.mp3');
+            this.clickSound.volume = 0.3;
             
             // 从本地存储获取音量设置
             const savedVolume = localStorage.getItem('musicVolume');
@@ -71,6 +76,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.bgm) {
                 console.log('设置音量:', volume);
                 this.bgm.volume = volume / 100;
+            }
+        },
+        
+        // 播放点击音效
+        playClickSound: function() {
+            if (this.clickSound) {
+                this.clickSound.currentTime = 0;
+                this.clickSound.play().catch(error => {
+                    console.log('点击音效播放失败:', error);
+                });
             }
         }
     };
@@ -153,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 按钮事件绑定
     document.getElementById('start-game').addEventListener('click', function() {
         console.log('开始游戏按钮被点击');
+        audioManager.playClickSound();
         
         // 停止当前BGM
         const titleBgm = document.getElementById('bgm-preload');
@@ -171,18 +187,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.getElementById('game-intro').addEventListener('click', function() {
+        audioManager.playClickSound();
         document.getElementById('intro-modal').classList.add('active');
     });
     
     document.getElementById('close-intro').addEventListener('click', function() {
+        audioManager.playClickSound();
         document.getElementById('intro-modal').classList.remove('active');
     });
     
     document.getElementById('game-settings').addEventListener('click', function() {
+        audioManager.playClickSound();
         document.getElementById('settings-modal').classList.add('active');
     });
     
     document.getElementById('save-settings').addEventListener('click', function() {
+        audioManager.playClickSound();
+        
         // 保存设置到本地存储
         const difficulty = document.getElementById('difficulty').value;
         const musicVolume = document.getElementById('music-volume').value;

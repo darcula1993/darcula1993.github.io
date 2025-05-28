@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>临安浮生记 - 开场剧情</title>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <!-- 本地字体DFHongYiKW3-B5已在CSS中定义 -->
     <link rel="stylesheet" href="intro.css">
     <style>
         /* 确保背景元素可见 */
@@ -77,51 +78,7 @@
         <div id="skip-button">跳过剧情</div>
     </div>
 
-    <!-- 音频交互提示脚本 -->
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            // 检查localStorage中是否有标记表示音频已经开始播放
-            const audioStarted = localStorage.getItem('audioStarted');
-            
-            if (!audioStarted) {
-                // 如果没有音频在播放，则添加一个交互提示
-                const interactionPrompt = document.createElement('div');
-                interactionPrompt.className = 'interaction-prompt';
-                interactionPrompt.innerHTML = `
-                    <div class="prompt-title">🎵 开启音乐体验</div>
-                    <div>点击开始沉浸式剧情音乐</div>
-                    <div class="prompt-subtitle">建议佩戴耳机以获得最佳体验</div>
-                `;
-                
-                interactionPrompt.addEventListener('click', function() {
-                    // 创建音频元素并播放
-                    const audio = new Audio('assets/audios/开场剧情bgm.ogg');
-                    audio.loop = true;
-                    audio.volume = 0.6;
-                    audio.play().then(() => {
-                        // 标记音频已开始播放
-                        localStorage.setItem('audioStarted', 'true');
-                        console.log('背景音乐开始播放');
-                    }).catch(error => {
-                        console.error('音频播放失败:', error);
-                        // 即使音频播放失败也移除提示
-                        localStorage.setItem('audioStarted', 'true');
-                    });
-                    
-                    // 添加淡出效果
-                    interactionPrompt.style.opacity = '0';
-                    interactionPrompt.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                    setTimeout(() => {
-                        if (document.body.contains(interactionPrompt)) {
-                    document.body.removeChild(interactionPrompt);
-                        }
-                    }, 300);
-                });
-                
-                document.body.appendChild(interactionPrompt);
-            }
-        });
-    </script>
+
 
     <script src="intro.js"></script>
 </body>

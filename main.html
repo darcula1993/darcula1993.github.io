@@ -6,6 +6,7 @@
     <title>临安浮生记</title>
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <!-- 本地字体DFHongYiKW3-B5已在CSS中定义 -->
 </head>
 <body>
     <div id="game-container">
@@ -14,19 +15,19 @@
             <div id="game-stats">
                 <div class="stat">
                     <span class="stat-label">日期</span>
-                    <span class="stat-value" id="current-date">绍兴十年十二月十八日</span>
+                    <span class="stat-value" id="current-date">绍兴十一年正月上旬</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-label">天数</span>
-                    <span class="stat-value"><span id="day">1</span>/40</span>
+                    <span class="stat-label">旬数</span>
+                    <span class="stat-value"><span id="current-period">一</span>/三十六</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">银两</span>
-                    <span class="stat-value"><span id="money">2000</span>文</span>
+                                            <span class="stat-value"><span id="money">1000</span>文</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">债务</span>
-                    <span class="stat-value"><span id="debt">5500</span>文</span>
+                                            <span class="stat-value"><span id="debt">16500</span>文</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">健康</span>
@@ -49,14 +50,21 @@
                     <button class="location-btn" data-location="大井巷">大井巷</button>
                     <button class="location-btn" data-location="万松岭">万松岭</button>
                     <button class="location-btn" data-location="湖墅">湖墅</button>
+                    <button class="location-btn entertainment-location" data-location="望湖楼">望湖楼</button>
+                </div>
+                <div id="location-history">
+                    <h3>地点典故</h3>
+                    <div id="history-content">
+                        <p class="history-placeholder">选择一个地点了解其历史典故</p>
+                    </div>
                 </div>
             </div>
 
             <div id="market-panel">
                 <h2>市场 - <span id="current-location">请选择地点</span></h2>
                 <div id="market-tabs">
-                    <button class="tab-btn active" data-tab="regular">正规商品</button>
-                    <button class="tab-btn" data-tab="gray">灰色商品</button>
+                                    <button class="tab-btn active" data-tab="regular">坊市</button>
+                <button class="tab-btn" data-tab="gray">黑市</button>
                 </div>
                 <div id="market-content">
                     <div id="regular-goods" class="goods-list active">
@@ -78,7 +86,7 @@
         </div>
 
         <div id="game-footer">
-            <button id="next-day-btn">结束今天</button>
+            <button id="next-period-btn">结束本旬</button>
         </div>
 
         <div id="event-modal" class="modal">
@@ -97,20 +105,20 @@
             </div>
         </div>
 
-        <!-- 结束今天确认模态框 -->
-        <div id="end-day-modal" class="modal">
+        <!-- 结束本旬确认模态框 -->
+        <div id="end-period-modal" class="modal">
             <div class="modal-content">
-                <h2>结束今天</h2>
-                <div id="day-summary">
-                    <p>今日总结：</p>
+                <h2>结束本旬</h2>
+                <div id="period-summary">
+                    <p>本旬总结：</p>
                     <div id="summary-content">
                         <!-- 动态生成的总结内容 -->
                     </div>
-                    <p class="warning-text">⚠️ 结束今天后将进入下一日，债务利息会增加10%，你确定要结束今天吗？</p>
+                    <p class="warning-text">⚠️ 结束本旬后将进入下一旬，债务利息会增加一成，你确定要结束本旬吗？</p>
                 </div>
                 <div class="modal-buttons">
-                    <button id="confirm-end-day" class="confirm-btn">确认结束</button>
-                    <button id="cancel-end-day" class="cancel-btn">继续今天</button>
+                    <button id="confirm-end-period" class="confirm-btn">确认结束</button>
+                    <button id="cancel-end-period" class="cancel-btn">继续本旬</button>
                 </div>
             </div>
         </div>
@@ -118,48 +126,63 @@
         <!-- 游戏玩法介绍模态框 -->
         <div id="tutorial-modal" class="modal">
             <div class="modal-content tutorial-content">
-                <h2>游戏玩法介绍</h2>
-                <div class="tutorial-sections">
-                    <div class="tutorial-section">
-                        <h3>📍 游戏目标</h3>
-                        <p>你需要在<strong>40天内</strong>还清<strong>5500文债务</strong>，并通过商业交易积累财富，成为临安城首富！</p>
-                    </div>
-                    
-                    <div class="tutorial-section">
-                        <h3>🏛️ 地点选择</h3>
-                        <p>临安城有6个不同的地区：<strong>清河坊、凤凰山、艮山门、大井巷、万松岭、湖墅</strong></p>
-                        <p>每个地区的商品价格都不同，你需要找到价格差异来获利。</p>
-                        <p><em>注意：每天只能访问一个地点！</em></p>
-                    </div>
-                    
-                    <div class="tutorial-section">
-                        <h3>💰 商品交易</h3>
-                        <p><strong>正规商品</strong>：丝绸、茶叶、瓷器、香料 - 安全但利润较低</p>
-                        <p><strong>灰色商品</strong>：私盐、兵器、禁书、赃物 - 利润高但有风险</p>
-                        <p>在价格低的地方买入，在价格高的地方卖出，赚取差价！</p>
-                    </div>
-                    
-                    <div class="tutorial-section">
-                        <h3>⚠️ 风险管理</h3>
-                        <p>灰色商品有被官府查获的风险，一旦被抓会损失商品和金钱。</p>
-                        <p>每日债务利息为<strong>10%</strong>，要及时还债避免利息累积。</p>
-                        <p>注意管理健康值，健康值过低会影响交易能力。</p>
-                    </div>
-                    
-                    <div class="tutorial-section">
-                        <h3>🎯 游戏技巧</h3>
-                        <ul>
-                            <li>观察各地价格差异，寻找最佳交易路线</li>
-                            <li>合理分配正规商品和灰色商品的比例</li>
-                            <li>留意随机事件，有些能带来意外收益</li>
-                            <li>时间宝贵，制定好每日的行动计划</li>
-                        </ul>
-                    </div>
+                <div class="tutorial-header">
+                    <h2>临安浮生记</h2>
+                    <div class="tutorial-subtitle">南宋商贾传奇 · 游戏指南</div>
                 </div>
                 
-                <div class="tutorial-footer">
-                    <button id="start-tutorial" class="tutorial-btn">开始游戏</button>
-                    <button id="skip-tutorial" class="tutorial-btn secondary">跳过教程</button>
+                <div class="tutorial-body">
+                    <div class="tutorial-sections">
+                        <div class="tutorial-section">
+                            <h3><span class="section-icon">🎯</span>游戏目标</h3>
+                            <div class="tutorial-highlight">
+                                <p>绍兴十一年十二月廿九之前，还清<strong>一万六千五百文债务</strong>，赎回妹妹！</p>
+                            </div>
+                            <p>通过商业交易积累财富，成为临安城首富，书写属于你的浮生传奇。</p>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h3><span class="section-icon">🏛️</span>地点与交易</h3>
+                            <p>临安城设有<strong>六大商区</strong>：清河坊、凤凰山、艮山门、大井巷、万松岭、湖墅，另有<strong>望湖楼</strong>可供休憩。</p>
+                            <div class="tutorial-tips">
+                                <div class="tutorial-tip">每旬只能访问一个地点</div>
+                                <div class="tutorial-tip">各地价格差异是获利关键</div>
+                                <div class="tutorial-tip">望湖楼可恢复健康值</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h3><span class="section-icon">💰</span>商品分类</h3>
+                            <p><strong>坊市正货</strong>：纺织、食品、工艺、药材、金属五大类，安全稳健。</p>
+                            <p><strong>黑市违禁</strong>：私盐、兵器、禁书等，<em>高利润伴随高风险</em>。</p>
+                            <div class="tutorial-highlight">
+                                <p>药材类波动最大（±40%），金属类最为稳定（±15%）</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h3><span class="section-icon">⚠️</span>风险提醒</h3>
+                            <div class="tutorial-tips">
+                                <div class="tutorial-tip">债务每旬增长一成利息</div>
+                                <div class="tutorial-tip">健康值归零即游戏结束</div>
+                                <div class="tutorial-tip">黑市商品可能被官府查获</div>
+                                <div class="tutorial-tip">随机事件影响市场行情</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h3><span class="section-icon">📜</span>制胜之道</h3>
+                            <p>观察价格波动，把握买卖时机；合理配置商品组合，平衡风险收益；关注时事变化，抓住商机良缘。</p>
+                            <div class="tutorial-highlight">
+                                <p><em>时间珍贵，每一旬的选择都关乎妹妹的命运！</em></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutorial-footer">
+                        <button id="start-tutorial" class="tutorial-btn">踏入临安</button>
+                        <button id="skip-tutorial" class="tutorial-btn secondary">直接开始</button>
+                    </div>
                 </div>
             </div>
         </div>

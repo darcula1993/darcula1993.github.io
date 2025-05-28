@@ -72,12 +72,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const audioManager = {
         bgm: null,
         currentTrack: '',
+        clickSound: null,
         
         // 初始化音频
         init: function() {
             this.bgm = new Audio();
             this.bgm.loop = true;
             this.bgm.volume = 0.5;
+            
+            // 初始化点击音效
+            this.clickSound = new Audio('assets/audios/click.mp3');
+            this.clickSound.volume = 0.3;
         },
         
         // 播放BGM
@@ -139,6 +144,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.bgm.volume = originalVolume;
                 }
             }, stepDuration);
+        },
+        
+        // 播放点击音效
+        playClickSound: function() {
+            if (this.clickSound) {
+                this.clickSound.currentTime = 0;
+                this.clickSound.play().catch(error => {
+                    console.log('点击音效播放失败:', error);
+                });
+            }
         }
     };
     
@@ -162,15 +177,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        console.log('开始播放开场剧情BGM');
         audioManager.play(audioTracks.intro);
         // 移除事件监听器，避免重复触发
         document.removeEventListener('click', playBackgroundMusic);
         document.removeEventListener('keydown', playBackgroundMusic);
+        document.removeEventListener('touchstart', playBackgroundMusic);
     }
     
-    // 添加用户交互事件监听器
+    // 添加用户交互事件监听器（包括移动端）
     document.addEventListener('click', playBackgroundMusic);
     document.addEventListener('keydown', playBackgroundMusic);
+    document.addEventListener('touchstart', playBackgroundMusic);
     
     // 背景图片 - 使用本地图片
     const backgrounds = {
@@ -274,133 +292,118 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 剧情对话
     const story = [
-        // 序章：家乡被毁
-        { type: 'narration', text: '建炎四年（公元1130年），金兵南下，北宋灭亡。' },
-        { type: 'narration', text: '康王赵构南渡建立南宋，定都临安（今杭州）。' },
+        // 序章：历史背景
+        { type: 'narration', text: '建炎四年，金兵南下，北宋灭亡。' },
+        { type: 'narration', text: '康王赵构南渡建立南宋，定都临安。' },
         { type: 'narration', text: '十年后，岳飞北伐抗金，战火再起...' },
-        { type: 'background', src: backgrounds.village },
         { type: 'narration', text: '你的家乡，位于北方的一个小村庄，不幸被金兵烧毁...' },
+        // 第一幕：家乡被毁
+        { type: 'background', src: backgrounds.village },
         { type: 'character', position: 'right', src: characters.player },
         { type: 'dialogue', speaker: '你', text: '（望着燃烧的村庄）爹...娘...为什么会这样...' },
         { type: 'dialogue', speaker: '旁白', text: '金兵的铁蹄踏过，你的村庄化为灰烬，父母双亡，只剩你和年幼的妹妹相依为命。' },
-        { type: 'dialogue', speaker: '你', text: '妹妹，别怕，有哥在。我们往南走，去临安城，那里没有战火，我们可以重新开始。' },
+        { type: 'dialogue', speaker: '你', text: '妹妹，别怕，有哥在。我们往南走，去临安城，那里没有战火，我们一定可以活下去！' },
         
-        // 第一幕：逃难路上
+        // 第二幕：逃难路上的饥饿与绝望
         { type: 'background', src: backgrounds.road },
         { type: 'character', position: 'right', src: characters.player },
         { type: 'character', position: 'left', src: characters.sister },
-        { type: 'dialogue', speaker: '旁白', text: '你带着妹妹，踏上了漫长的逃难之路。一路上，你们忍饥挨饿，风餐露宿。' },
-        { type: 'dialogue', speaker: '你', text: '（疲惫地）再坚持一下，听说前面不远就是临安城了。' },
-        { type: 'dialogue', speaker: '妹妹', text: '哥...我饿...我走不动了...' },
-        { type: 'dialogue', speaker: '你', text: '（心痛地）再忍一忍，到了临安，哥一定会找到活路的。' },
-        { type: 'dialogue', speaker: '旁白', text: '然而，妹妹已经三天没有进食，脸色苍白，步履蹒跚。' },
+        { type: 'dialogue', speaker: '旁白', text: '绍兴十年，你带着妹妹踏上了漫长的逃难之路。' },
+        { type: 'dialogue', speaker: '旁白', text: '寒风刺骨，雪花纷飞。你们身上只有单薄的衣衫，脚下是破烂的草鞋。' },
+        { type: 'dialogue', speaker: '你', text: '（颤抖着）妹妹，再坚持一下，前面应该就有村庄了...' },
+        { type: 'dialogue', speaker: '妹妹', text: '（虚弱地）哥...我走不动了...' },
+        { type: 'dialogue', speaker: '旁白', text: '妹妹的脸色苍白如纸，嘴唇发紫，眼神涣散。她的身体摇摇欲坠，仿佛随时会倒下。' },
+        { type: 'dialogue', speaker: '你', text: '（心如刀割）都是哥没用...连口饭都给不了你吃...' },
+        { type: 'dialogue', speaker: '妹妹', text: '（勉强笑着）哥，不怪你...是这世道不好...' },
+        { type: 'dialogue', speaker: '旁白', text: '就在你们快要支撑不住的时候，路边走来了一个衣着华丽的富商。' },
         
-        // 第二幕：无奈之举
-        { type: 'background', src: backgrounds.village },
-        { type: 'character', position: 'left', src: characters.merchant },
-        { type: 'character', position: 'right', src: characters.player },
-        { type: 'character', position: 'center', src: characters.sister },
-        { type: 'dialogue', speaker: '旁白', text: '临近临安城的一个村庄，你们遇到了一位富绅。' },
-        { type: 'dialogue', speaker: '富绅', text: '看你们兄妹二人如此落魄，何不让小姑娘到我家做个丫鬟？有吃有住，总比流落街头强。' },
-        { type: 'dialogue', speaker: '你', text: '（犹豫）这...' },
-        { type: 'dialogue', speaker: '妹妹', text: '哥，你就让我去吧。你先去城里找活路，等有钱了再来接我。' },
-        { type: 'dialogue', speaker: '富绅', text: '我可以给你五千五百文，算是预支工钱。四十天后，你若带钱来赎人，我自然放她走；若不来，她就是我家的丫鬟了。' },
-        { type: 'dialogue', speaker: '你', text: '（咬牙）好，四十天，我一定会回来赎妹妹！' },
-        { type: 'dialogue', speaker: '旁白', text: '你含泪与妹妹告别，带着五千五百文钱，独自前往临安城。' },
+        // 第三幕：遇到人贩子
+        { type: 'character', position: 'center', src: characters.merchant },
+        { type: 'dialogue', speaker: '人贩子', text: '啧...最近的流民越来越多了，不知道北边的情况如何了...' },
+        { type: 'dialogue', speaker: '人贩子', text: '咦？这小姑娘骨相不错啊...' },
+        { type: 'dialogue', speaker: '人贩子', text: '（上前打招呼）这位小兄弟，想吃饱饭吗？' },
+        { type: 'dialogue', speaker: '你', text: '（警惕地）你...你是什么人？' },
+        { type: 'dialogue', speaker: '人贩子', text: '你别管我是谁。我看你身边这小姑娘不错，我可以出五千五百文买下她。' },
+        { type: 'dialogue', speaker: '你', text: '（愤怒）什么？！你想买我妹妹？！' },
+        { type: 'dialogue', speaker: '人贩子', text: '别激动，我不是恶人。我看你们脚步虚浮，她也是风寒在身，怕是很久没吃过饱饭了。她跟着我，至少有饭吃，有衣穿，总比在这里饿死强。' },
+        { type: 'dialogue', speaker: '妹妹', text: '（拉住你的袖子）哥...' },
+        { type: 'dialogue', speaker: '你', text: '不！我绝不会卖掉你！我们一起死也不分开！' },
         
-        // 第三幕：抵达临安
+        // 第四幕：妹妹的牺牲
+        { type: 'dialogue', speaker: '妹妹', text: '（眼含热泪）哥，你听我说...如果我们都死在这里，那就真的什么都没有了。' },
+        { type: 'dialogue', speaker: '妹妹', text: '但如果我跟他走，你就能活下去，还能想办法救我出来。' },
+        { type: 'dialogue', speaker: '你', text: '（哽咽）妹妹...我怎么能...' },
+        { type: 'dialogue', speaker: '妹妹', text: '哥，我相信你一定能成功的。你要好好活着，然后来救我。' },
+        { type: 'dialogue', speaker: '人贩子', text: '我也不是没良心的人。这样吧，明年十二月廿九之前，你若能带一万六千五百文来赎人，我就放她走。' },
+        { type: 'dialogue', speaker: '你', text: '（震惊）一万六千五百文？！那是三倍的价钱！' },
+        { type: 'dialogue', speaker: '人贩子', text: '养一个人一年，吃穿用度，再加上利息，这个价钱不算高。' },
+        { type: 'dialogue', speaker: '妹妹', text: '（坚定地）哥，答应他吧。我等你来救我。' },
+        { type: 'dialogue', speaker: '你', text: '（含泪点头）好...我答应你...明年十二月廿九，我一定带钱来赎你！' },
+        { type: 'dialogue', speaker: '旁白', text: '你含泪与妹妹告别，接过五千五百文钱，看着她跟人贩子离去的背影。' },
+        
+        // 第五幕：抵达临安
         { type: 'background', src: backgrounds.city },
         { type: 'character', position: 'left', src: null },
         { type: 'character', position: 'right', src: characters.player },
-        { type: 'dialogue', speaker: '旁白', text: '经过几日跋涉，你终于抵达了传说中的临安城。' },
-        { type: 'dialogue', speaker: '你', text: '（惊叹）这就是临安城！果然繁华非凡！我一定要在这里找到活路，赚钱赎回妹妹。' },
-        { type: 'dialogue', speaker: '旁白', text: '城中人来人往，叫卖声此起彼伏。各色商铺林立，货物琳琅满目。' },
-        { type: 'dialogue', speaker: '你', text: '先找个地方住下，然后打听打听哪里能找到活计。' },
+        { type: 'dialogue', speaker: '旁白', text: '怀着沉重的心情，你独自前往临安城。' },
+        { type: 'dialogue', speaker: '你', text: '（望着繁华的临安城）妹妹，哥一定会在这里赚到钱，然后救你出来的！' },
+        { type: 'dialogue', speaker: '旁白', text: '临安城果然繁华，街道上人来人往，商铺林立，一片繁荣景象。' },
+        { type: 'dialogue', speaker: '你', text: '有了这五千五百文，我要想办法让它变成一万六千五百文！' },
         
-        // 第四幕：客栈
-        { type: 'background', src: backgrounds.tavern },
-        { type: 'character', position: 'left', src: characters.innkeeper },
-        { type: 'character', position: 'right', src: characters.player },
-        { type: 'dialogue', speaker: '店主', text: '客官，是打尖还是住店？' },
-        { type: 'dialogue', speaker: '你', text: '掌柜的，我想住几日，不知一晚上多少钱？' },
-        { type: 'dialogue', speaker: '店主', text: '标准间一晚五十文，包一顿早饭。上房一晚一百文，包两顿饭。' },
-        { type: 'dialogue', speaker: '你', text: '（心想：得省着点用）给我一间标准的吧。' },
-        { type: 'dialogue', speaker: '店主', text: '好嘞！客官从哪来啊？来临安做什么？' },
-        { type: 'dialogue', speaker: '你', text: '在下从北方来，想在临安找个活路。' },
-        { type: 'dialogue', speaker: '店主', text: '哦？找活路啊。临安城机会多，但水也深，客官要小心。' },
-        { type: 'dialogue', speaker: '店主', text: '尤其是那些说能一夜暴富的，十有八九是骗子。' },
-        { type: 'dialogue', speaker: '你', text: '多谢提醒，我会注意的。' },
-        
-        // 第五幕：被骗
+        // 第六幕：被骗
         { type: 'background', src: backgrounds.street },
         { type: 'character', position: 'left', src: characters.merchant },
         { type: 'character', position: 'right', src: characters.player },
-        { type: 'dialogue', speaker: '旁白', text: '安顿下来后，你在城中四处打听工作。一位看似热心的商人向你推荐了一个"稳赚不赔"的生意。' },
-        { type: 'dialogue', speaker: '商人', text: '兄弟，看你面生，是刚到临安吧？我告诉你，现在有个发财的好机会！' },
-        { type: 'dialogue', speaker: '你', text: '什么机会？' },
-        { type: 'dialogue', speaker: '商人', text: '最近北方战事吃紧，军中急需丝绸做旗帜。我有渠道，你只需出钱，我帮你买进丝绸，转手就能卖给军中，利润至少翻倍！' },
-        { type: 'dialogue', speaker: '你', text: '（心动）真的？这么好的事？' },
-        { type: 'dialogue', speaker: '商人', text: '千真万确！我在临安做了十几年生意，还会骗你不成？你要是不信，可以先投一点试试。' },
-        { type: 'dialogue', speaker: '你', text: '（思考）我手上有五千五百文，是用来赎我妹妹的...' },
-        { type: 'dialogue', speaker: '商人', text: '兄弟，你这是为了家人啊！更应该把握机会。十天之内，保证你的钱翻一倍！' },
-        { type: 'dialogue', speaker: '旁白', text: '被商人的花言巧语打动，你决定将全部积蓄交给他，期待着丰厚的回报。' },
-        { type: 'dialogue', speaker: '你', text: '（交出钱袋）这是我全部的钱，拜托了。' },
-        { type: 'dialogue', speaker: '商人', text: '（接过钱）放心吧！三天后，在清河坊集合，我把货物和利润一起给你！' },
+        { type: 'dialogue', speaker: '旁白', text: '在临安城中，你遇到了一位热心的商人。' },
+        { type: 'dialogue', speaker: '商人', text: '兄弟，看你面生，是刚到临安吧？想不想发财？' },
+        { type: 'dialogue', speaker: '你', text: '发财？什么意思？' },
+        { type: 'dialogue', speaker: '商人', text: '我有个稳赚不赔的生意，我有门路，投五千文，一个月后就能变成一万文！' },
+        { type: 'dialogue', speaker: '你', text: '（心动）真的吗？那太好了！我正需要赚钱！' },
+        { type: 'dialogue', speaker: '商人', text: '当然是真的！北边岳元帅的军队需要丝绸，你投钱给我，我替你经营，转手就是十倍的利润' },
+        { type: 'dialogue', speaker: '旁白', text: '你看他面相和蔼又言之确凿，就将所有的钱都交给了他。' },
+        { type: 'dialogue', speaker: '你', text: '（交出钱袋）这是我全部的钱，拜托了！' },
+        { type: 'dialogue', speaker: '商人', text: '（接过钱）放心！一个月后在清河坊见面！' },
         
-        // 第六幕：上当
+        // 第七幕：血本无归
         { type: 'background', src: backgrounds.street },
         { type: 'character', position: 'left', src: null },
         { type: 'character', position: 'right', src: characters.player },
-        { type: 'dialogue', speaker: '旁白', text: '三天后，你按约定来到清河坊，却不见商人的踪影。' },
-        { type: 'dialogue', speaker: '你', text: '（焦急）奇怪，人呢？约定的时间已经过了。' },
-        { type: 'dialogue', speaker: '路人', text: '你在等谁啊？' },
-        { type: 'dialogue', speaker: '你', text: '一个姓王的商人，说好在这里交易的。' },
-        { type: 'dialogue', speaker: '路人', text: '（摇头）哎，又一个被骗的。那个"王商人"是临安城有名的骗子，专骗外地人的钱。' },
-        { type: 'dialogue', speaker: '你', text: '（震惊）什么？！不...不可能！我的钱...我妹妹...' },
-        { type: 'dialogue', speaker: '旁白', text: '你瘫坐在地上，绝望万分。不仅钱财被骗一空，还失去了赎回妹妹的希望。' },
+        { type: 'dialogue', speaker: '旁白', text: '一个月后，你来到清河坊，却再也找不到那个商人。' },
+        { type: 'dialogue', speaker: '你', text: '（绝望）不...不可能...我的钱...我妹妹...' },
+        { type: 'dialogue', speaker: '路人', text: '又一个被骗的。那个王商人是有名的骗子，专门骗外地人。' },
+        { type: 'dialogue', speaker: '你', text: '（瘫坐在地）完了...全完了...我拿什么去救妹妹...' },
+        { type: 'dialogue', speaker: '旁白', text: '你身无分文，流落街头，绝望地想着妹妹的处境。' },
         
-        // 第七幕：债主登场
-        { type: 'background', src: backgrounds.tavern },
-        { type: 'character', position: 'left', src: characters.creditor },
+        // 第八幕：神秘乞丐的帮助
+        { type: 'background', src: backgrounds.street },
+        { type: 'character', position: 'left', src: characters.gambler },
         { type: 'character', position: 'right', src: characters.player },
-        { type: 'dialogue', speaker: '旁白', text: '回到客栈，你发现一位陌生人正等着你。' },
-        { type: 'dialogue', speaker: '债主', text: '你就是新来的吧？我听说你被王商人骗了？' },
-        { type: 'dialogue', speaker: '你', text: '（警惕）你是谁？' },
-        { type: 'dialogue', speaker: '债主', text: '我是做钱庄生意的。那个王商人欠我一笔钱，现在他跑了，债务就转到你头上了。' },
-        { type: 'dialogue', speaker: '你', text: '（愤怒）凭什么？我是受害者！' },
-        { type: 'dialogue', speaker: '债主', text: '（冷笑）你们是合伙做生意，他拿了你的钱，你就是他的合伙人。他欠的债，你也得还。' },
-        { type: 'dialogue', speaker: '你', text: '这不公平！我根本不认识他！' },
-        { type: 'dialogue', speaker: '债主', text: '公平？在临安城，有钱就是公平。你现在欠我五千五百文，每天利息一分，也就是十文钱。' },
-        { type: 'dialogue', speaker: '债主', text: '我给你四十天时间还清，否则...你应该不想知道后果吧？' },
-        { type: 'dialogue', speaker: '你', text: '（绝望）四十天...这不可能...' },
-        { type: 'dialogue', speaker: '债主', text: '没什么不可能的。临安城机会多的是，只要你够聪明，四十天赚五千五百文不是难事。' },
-        { type: 'dialogue', speaker: '债主', text: '这是契约，按个手印。记住，四十天后，我会来找你。' },
-        { type: 'dialogue', speaker: '你', text: '（无奈按下手印）我...我会还的。' },
+        { type: 'dialogue', speaker: '神秘乞丐', text: '年轻人，我看你愁眉苦脸的，是遇到什么难处了？' },
+        { type: 'dialogue', speaker: '你', text: '（抬头看）一个乞丐？' },
+        { type: 'dialogue', speaker: '神秘乞丐', text: '别小看乞丐。我在临安城混了几十年，什么世面没见过？' },
+        { type: 'dialogue', speaker: '你', text: '（苦笑）我被骗了，现在身无分文，还要救我妹妹...' },
+        { type: 'dialogue', speaker: '神秘乞丐', text: '这样吧，我看你是个有情有义的人，这一千文你拿去。' },
+        { type: 'dialogue', speaker: '你', text: '（震惊）一千文？！你一个乞丐哪来这么多钱？' },
+        { type: 'dialogue', speaker: '神秘乞丐', text: '（神秘一笑）我说了，别小看任何人。这钱你拿去，想办法翻身吧。' },
+        { type: 'dialogue', speaker: '神秘乞丐', text: '记住，在临安城，只要你够聪明，够勇敢，一千文也能变成一万文。' },
+        { type: 'dialogue', speaker: '你', text: '（感激涕零）谢谢...谢谢您！我一定不会辜负您的好意！' },
         
         // 尾声
-        { type: 'dialogue', speaker: '旁白', text: '就这样，你在临安城既背负了五千五百文的债务，又肩负着赎回妹妹的重任。' },
-        { type: 'dialogue', speaker: '旁白', text: '四十天的期限，双重的压力，让你倍感绝望。' },
-        { type: 'dialogue', speaker: '旁白', text: '但临安城机遇与挑战并存，只要你足够聪明，善于把握时机，或许还能在这繁华都市中闯出一片天地...' },
-        { type: 'dialogue', speaker: '旁白', text: '你的临安浮生记，正式开始了。' },
+        { type: 'dialogue', speaker: '旁白', text: '就这样，你在临安城重新开始，手中只有一千文和一颗拯救妹妹的决心。' },
+        { type: 'dialogue', speaker: '旁白', text: '距离明年十二月廿九的期限，你还有一年的时间。' },
+        { type: 'dialogue', speaker: '旁白', text: '你必须想办法将这一千文变成一万六千五百文，才能赎回心爱的妹妹。' },
+        { type: 'dialogue', speaker: '旁白', text: '临安城机遇与挑战并存，你的浮生记，正式开始了...' },
         { type: 'end' }
     ];
     
     let currentStoryIndex = 0;
-    
-    // 点击对话框继续剧情
-    dialogueBox.addEventListener('click', function() {
-        console.log('对话框被点击，当前索引:', currentStoryIndex);
-        currentStoryIndex++;
-        if (currentStoryIndex < story.length) {
-            showStory(currentStoryIndex);
-        } else {
-            endStory();
-        }
-    });
+    let isProcessing = false; // 添加处理状态标志
+    let currentClickHandler = null; // 当前的点击处理器
     
     // 点击跳过按钮
     skipButton.addEventListener('click', function() {
         console.log('跳过按钮被点击');
+        audioManager.playClickSound();
         skipStory();
     });
     
@@ -419,10 +422,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 'background':
+                isProcessing = true; // 设置处理状态
                 changeBackground(currentScene.src);
                 break;
                 
             case 'character':
+                isProcessing = true; // 设置处理状态
                 showCharacter(currentScene.position, currentScene.src);
                 break;
                 
@@ -438,13 +443,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 根据剧情内容更新BGM
     function updateBGMForScene(index, scene) {
-        // 不在这里自动播放BGM，而是依赖用户交互触发的playBackgroundMusic函数
-        // 也不在场景切换时重新播放BGM，保持BGM连续播放
+        // 整个开场剧情只播放一个BGM，不做切换
+    }
+    
+    // 移除当前的点击事件监听器
+    function removeCurrentClickHandler() {
+        if (currentClickHandler) {
+            document.body.removeEventListener('click', currentClickHandler);
+            currentClickHandler = null;
+        }
     }
     
     // 显示旁白
     function showNarration(text) {
         console.log('显示旁白:', text);
+        
+        // 如果正在处理，直接返回
+        if (isProcessing) {
+            console.log('正在处理中，忽略点击');
+            return;
+        }
+        
+        isProcessing = true;
+        removeCurrentClickHandler(); // 移除之前的事件监听器
         
         // 淡出对话框和角色
         dialogueBox.style.opacity = '0';
@@ -452,6 +473,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (characterLeft) characterLeft.style.opacity = '0';
         if (characterRight) characterRight.style.opacity = '0';
         if (characterCenter) characterCenter.style.opacity = '0';
+        
+        // 检查是否是历史背景介绍（前四个旁白）
+        const isHistorical = currentStoryIndex <= 3;
+        if (isHistorical) {
+            narrationElement.classList.add('historical');
+            // 历史背景使用纯黑背景
+            background.style.backgroundColor = '#000000';
+            background.style.backgroundImage = 'none';
+            background.style.opacity = '1';
+        } else {
+            narrationElement.classList.remove('historical');
+        }
         
         // 显示过渡黑屏
         transitionElement.classList.add('active');
@@ -461,38 +494,45 @@ document.addEventListener('DOMContentLoaded', function() {
             narrationElement.textContent = text;
             narrationElement.classList.add('active');
             console.log('旁白元素已激活');
-        }, 1000);
-        
-        // 等待点击继续
-        const clickHandler = function(event) {
-            // 防止跳过按钮的点击事件触发剧情继续
-            if (event.target === skipButton) {
-                return;
-            }
             
-            // 淡出旁白
-            narrationElement.classList.remove('active');
-            
-            setTimeout(() => {
-                // 淡出黑屏
-                transitionElement.classList.remove('active');
+            // 等待点击继续
+            currentClickHandler = function(event) {
+                // 防止跳过按钮的点击事件触发剧情继续
+                if (event.target === skipButton || !isProcessing) {
+                    return;
+                }
+                
+                // 播放点击音效
+                audioManager.playClickSound();
                 
                 // 移除点击事件
-                document.body.removeEventListener('click', clickHandler);
+                removeCurrentClickHandler();
                 
-                // 继续下一段剧情
-                currentStoryIndex++;
-                if (currentStoryIndex < story.length) {
-                    setTimeout(() => {
-                        showStory(currentStoryIndex);
-                    }, 800);
+                // 淡出旁白
+                narrationElement.classList.remove('active');
+                
+                setTimeout(() => {
+                    // 淡出黑屏
+                    transitionElement.classList.remove('active');
+                    
+                    // 继续下一段剧情
+                    currentStoryIndex++;
+                    isProcessing = false; // 重置处理状态
+                    
+                    if (currentStoryIndex < story.length) {
+                        setTimeout(() => {
+                            showStory(currentStoryIndex);
+                        }, 500);
+                    }
+                }, 800);
+            };
+            
+            // 添加延迟，防止用户立即点击跳过
+            setTimeout(() => {
+                if (isProcessing) { // 只有在仍在处理时才添加监听器
+                    document.body.addEventListener('click', currentClickHandler);
                 }
-            }, 800);
-        };
-        
-        // 添加延迟，防止用户立即点击跳过
-        setTimeout(() => {
-            document.body.addEventListener('click', clickHandler);
+            }, 1000);
         }, 1500);
     }
     
@@ -503,11 +543,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // 显示过渡黑屏
         transitionElement.classList.add('active');
         
+        // 淡出对话框
+        dialogueBox.style.opacity = '0';
+        dialogueBox.classList.remove('show');
+        
         // 淡出当前背景和角色
         background.style.opacity = '0';
-        if (characterLeft) characterLeft.style.opacity = '0';
-        if (characterRight) characterRight.style.opacity = '0';
-        if (characterCenter) characterCenter.style.opacity = '0';
+        if (characterLeft) {
+            characterLeft.style.opacity = '0';
+            characterLeft.classList.remove('active');
+            characterLeft.style.backgroundImage = 'none';
+        }
+        if (characterRight) {
+            characterRight.style.opacity = '0';
+            characterRight.classList.remove('active');
+            characterRight.style.backgroundImage = 'none';
+        }
+        if (characterCenter) {
+            characterCenter.style.opacity = '0';
+            characterCenter.classList.remove('active');
+            characterCenter.style.backgroundImage = 'none';
+        }
         
         // 等待当前背景淡出完成
         setTimeout(() => {
@@ -530,6 +586,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // 继续下一段剧情
                         currentStoryIndex++;
+                        isProcessing = false; // 重置处理状态
                         if (currentStoryIndex < story.length) {
                             setTimeout(() => {
                                 showStory(currentStoryIndex);
@@ -547,6 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 继续下一段剧情
                 currentStoryIndex++;
+                isProcessing = false; // 重置处理状态
                 if (currentStoryIndex < story.length) {
                     setTimeout(() => {
                         showStory(currentStoryIndex);
@@ -585,6 +643,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 继续下一段剧情
                 currentStoryIndex++;
+                isProcessing = false; // 重置处理状态
                 if (currentStoryIndex < story.length) {
                     setTimeout(() => {
                         showStory(currentStoryIndex);
@@ -606,6 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // 继续下一段剧情
                         currentStoryIndex++;
+                        isProcessing = false; // 重置处理状态
                         if (currentStoryIndex < story.length) {
                             setTimeout(() => {
                                 showStory(currentStoryIndex);
@@ -621,6 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 继续下一段剧情
                     currentStoryIndex++;
+                    isProcessing = false; // 重置处理状态
                     if (currentStoryIndex < story.length) {
                         setTimeout(() => {
                             showStory(currentStoryIndex);
@@ -636,6 +697,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // 显示对话
     function showDialogue(speaker, text) {
         console.log('显示对话:', speaker, text);
+        
+        // 如果正在处理，直接返回
+        if (isProcessing) {
+            console.log('正在处理中，忽略点击');
+            return;
+        }
+        
+        isProcessing = true;
+        removeCurrentClickHandler(); // 移除之前的事件监听器
+        
+        // 先移除所有角色的speaking效果
+        if (characterLeft) characterLeft.classList.remove('speaking');
+        if (characterRight) characterRight.classList.remove('speaking');
+        if (characterCenter) characterCenter.classList.remove('speaking');
+        
+        // 根据说话人添加speaking效果
+        if (speaker === '你' && characterRight && characterRight.style.opacity === '1') {
+            characterRight.classList.add('speaking');
+        } else if (speaker === '妹妹' && characterLeft && characterLeft.style.opacity === '1') {
+            characterLeft.classList.add('speaking');
+        } else if ((speaker === '富绅' || speaker === '商人' || speaker === '债主' || speaker === '店主') && characterLeft && characterLeft.style.opacity === '1') {
+            characterLeft.classList.add('speaking');
+        } else if (characterCenter && characterCenter.style.opacity === '1') {
+            characterCenter.classList.add('speaking');
+        }
         
         // 先淡出对话框
         dialogueBox.style.opacity = '0';
@@ -653,16 +739,53 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 逐字显示文本
             let i = 0;
-            const typingSpeed = 50; // 打字速度（毫秒/字）
+            const typingSpeed = 20; // 打字速度（毫秒/字）- 加快速度
+            let isTyping = true; // 添加打字状态标志
             
             function typeWriter() {
-                if (i < text.length) {
+                if (i < text.length && isTyping) {
                     dialogueText.textContent += text.charAt(i);
                     i++;
                     setTimeout(typeWriter, typingSpeed);
-                } else {
+                } else if (isTyping) {
                     // 打字完成，移除光标效果
                     dialogueText.classList.remove('typing-cursor');
+                    
+                    // 添加点击继续的事件监听器
+                    currentClickHandler = function(event) {
+                        // 防止跳过按钮的点击事件触发剧情继续
+                        if (event.target === skipButton || !isProcessing) {
+                            return;
+                        }
+                        
+                        // 播放点击音效
+                        audioManager.playClickSound();
+                        
+                        // 移除speaking效果
+                        if (characterLeft) characterLeft.classList.remove('speaking');
+                        if (characterRight) characterRight.classList.remove('speaking');
+                        if (characterCenter) characterCenter.classList.remove('speaking');
+                        
+                        // 移除点击事件
+                        removeCurrentClickHandler();
+                        
+                        // 继续下一段剧情
+                        currentStoryIndex++;
+                        isProcessing = false; // 重置处理状态
+                        
+                        if (currentStoryIndex < story.length) {
+                            setTimeout(() => {
+                                showStory(currentStoryIndex);
+                            }, 300);
+                        }
+                    };
+                    
+                    // 添加延迟，防止用户立即点击跳过
+                    setTimeout(() => {
+                        if (isProcessing) { // 只有在仍在处理时才添加监听器
+                            document.body.addEventListener('click', currentClickHandler);
+                        }
+                    }, 500);
                 }
             }
             
@@ -688,6 +811,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function skipStory() {
+        // 清理状态
+        isProcessing = false;
+        removeCurrentClickHandler();
+        
         // 设置标记，表示应该播放游戏BGM
         localStorage.setItem('shouldPlayGameBGM', 'true');
         

@@ -1,8 +1,16 @@
+@font-face {
+    font-family: 'DFHongYiKW3-B5';
+    src: url('assets/fonts/DFHongYiKW3-B5.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimSun', serif;
+    font-family: 'DFHongYiKW3-B5', 'Ma Shan Zheng', 'STKaiti', 'KaiTi', 'SimSun', serif;
 }
 
 /* 页面淡入效果 */
@@ -293,37 +301,40 @@ body::after {
     opacity: 0.9;
 }
 
-.era {
-    font-size: 18px;
+.version {
+    font-size: 20px;
     color: #8d6e63;
     position: relative;
     display: inline-block;
-    padding: 8px 30px;
+    padding: 10px 25px;
     background: linear-gradient(
         90deg,
         transparent 0%,
-        rgba(212, 175, 55, 0.1) 50%,
+        rgba(212, 175, 55, 0.15) 50%,
         transparent 100%
     );
-    border-radius: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 15px;
 }
 
-.era::before, .era::after {
+.version::before, .version::after {
     content: "◆";
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     color: #d4af37;
-    font-size: 12px;
-    opacity: 0.7;
+    font-size: 14px;
+    opacity: 0.8;
 }
 
-.era::before {
+.version::before {
     left: 8px;
 }
 
-.era::after {
+.version::after {
     right: 8px;
 }
 
@@ -677,9 +688,9 @@ body::after {
         font-size: 20px;
     }
     
-    .era {
-        font-size: 16px;
-        padding: 6px 20px;
+    .version {
+        font-size: 18px;
+        padding: 8px 20px;
     }
     
     .menu-btn {
@@ -720,9 +731,9 @@ body::after {
         font-size: 18px;
     }
     
-    .era {
-        font-size: 14px;
-        padding: 5px 15px;
+    .version {
+        font-size: 16px;
+        padding: 6px 15px;
     }
     
     .menu-btn {
